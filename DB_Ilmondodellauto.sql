@@ -22,7 +22,7 @@ CREATE TABLE MACCHINA (
     Marca VARCHAR(255) NOT NULL,
     Modello VARCHAR(255) NOT NULL,
     Anno SMALLINT NOT NULL,
-    Stato ENUM('Disponibile', 'Prenotata', 'Vendutaa') DEFAULT 'Disponibile',
+    Stato ENUM('Disponibile', 'Prenotata', 'Venduta') DEFAULT 'Disponibile',
     Cilindrata DECIMAL(5,1) NOT NULL,
     PotenzaKw INT NOT NULL,
     Cavalli INT NOT NULL,

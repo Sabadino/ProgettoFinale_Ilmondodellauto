@@ -1,0 +1,33 @@
+{
+  "userpages": [
+    "catalogo.php",
+    "dettaglio.php",
+    "login.php",
+    "register.php",
+    "wishlist.php",
+    "prenotazione.php",
+    "miePrenotazioni.php"
+  ],
+  "adminpages": [
+    "gestioneAuto.php",
+    "gestionePrenotazioni.php"
+  ],
+  "loggedInPages": [
+    "wishlist.php",
+    "prenotazione.php",
+    "miePrenotazioni.php",
+    "gestioneAuto.php",
+    "gestionePrenotazioni.php"
+  ],
+  "DBPages": [
+    "catalogo.php",
+    "dettaglio.php",
+    "login.php",
+    "register.php",
+    "wishlist.php",
+    "prenotazione.php",
+    "miePrenotazioni.php",
+    "gestioneAuto.php",
+    "gestionePrenotazioni.php"
+  ]
+}

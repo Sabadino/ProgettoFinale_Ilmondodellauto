@@ -1,0 +1,3 @@
+<If "%{REQUEST_URI} != '/ProgettoFinale_Ilmondodellauto/index.php'">
+    php_value auto_prepend_file "include/menuChoice.php"
+</If>

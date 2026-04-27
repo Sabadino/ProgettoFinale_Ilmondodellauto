@@ -1,0 +1,38 @@
+body {
+    background-color: #F6F3ED;
+    font-family: sans-serif;
+}
+
+.car-marca {
+    font-size: 11px;
+    color: gray;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.no-foto {
+    height: 160px;
+    background-color: #eee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: gray;
+}
+
+.badge-spec {
+    font-size: 11px;
+    padding: 3px 8px;
+    background-color: #eee;
+    border-radius: 4px;
+    color: gray;
+}
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+
+.card-img-top {
+    height: 160px;
+    object-fit: cover;
+}

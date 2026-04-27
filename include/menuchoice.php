@@ -25,5 +25,3 @@ if (in_array($currentPage, $pages->adminpages)) {
 } else if (in_array($currentPage, $pages->userpages)) {
     require_once __DIR__ . '/navbar.php';
 }  
-
-ma 

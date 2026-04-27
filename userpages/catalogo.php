@@ -1,88 +1,100 @@
 <?php
 $pdo = DBHandler::getPDO();
 
-$sql = "SELECT m.*, mi.URL as Immagine 
-        FROM macchina m 
-        LEFT JOIN macchina_immagini mi ON m.ID = mi.ID_Macchina AND mi.Ordine = 0
-        WHERE m.Stato = 'Disponibile'";
+$sql = "SELECT m.*, mi.URL as Immagine FROM macchina m LEFT JOIN macchina_immagini mi ON m.ID = mi.ID_Macchina AND mi.Ordine = 0 WHERE m.Stato = 'Disponibile'";
 
-if (isset($_GET['tipo']) && $_GET['tipo'] != '') {
+if(isset($_GET['tipo']) && $_GET['tipo'] != '') {
     $sql .= " AND m.TipoVeicolo = :tipo";
 }
-
-if (isset($_GET['marca']) && $_GET['marca'] != '') {
+if(isset($_GET['marca']) && $_GET['marca'] != '') {
     $sql .= " AND m.Marca = :marca";
 }
 
 $sth = $pdo->prepare($sql);
 
-if (isset($_GET['tipo']) && $_GET['tipo'] != '') {
-    $sth->bindParam('tipo', $_GET['tipo'], PDO::PARAM_STR);
+if(isset($_GET['tipo']) && $_GET['tipo'] != '') {
+    $sth->bindParam(':tipo', $_GET['tipo'], PDO::PARAM_STR);
 }
-if (isset($_GET['marca']) && $_GET['marca'] != '') {
-    $sth->bindParam('marca', $_GET['marca'], PDO::PARAM_STR);
+if(isset($_GET['marca']) && $_GET['marca'] != '') {
+    $sth->bindParam(':marca', $_GET['marca'], PDO::PARAM_STR);
 }
 
 $sth->execute();
-$auto = $sth->fetchAll();
+$auto = $sth->fetchAll(PDO::FETCH_ASSOC);
 
-$marche = $pdo->query("SELECT DISTINCT Marca FROM macchina ORDER BY Marca")->fetchAll();
+$marche = $pdo->query("SELECT DISTINCT Marca FROM macchina ORDER BY Marca")->fetchAll(PDO::FETCH_ASSOC);
 ?>
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalogo - Il Mondo dell'Auto</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/ProgettoFinale_Ilmondodellauto/style/catalogo.css">
+</head>
+<body>
 
 <div class="container mt-4">
 
     <h1>Catalogo auto</h1>
 
-    <form method="GET" class="mb-4">
-        <select name="tipo">
+    <form method="GET" class="mb-4 d-flex gap-2">
+        <select name="tipo" class="form-select w-auto">
             <option value="">Tutti</option>
-            <option value="Nuovo" <?= isset($_GET['tipo']) && $_GET['tipo'] == 'Nuovo' ? 'selected' : '' ?>>Nuovo</option>
-            <option value="Usato" <?= isset($_GET['tipo']) && $_GET['tipo'] == 'Usato' ? 'selected' : '' ?>>Usato</option>
-            <option value="Km Zero" <?= isset($_GET['tipo']) && $_GET['tipo'] == 'Km Zero' ? 'selected' : '' ?>>Km Zero</option>
+            <option value="Nuovo" <?php if(isset($_GET['tipo']) && $_GET['tipo'] == 'Nuovo') echo 'selected'; ?>>Nuovo</option>
+            <option value="Usato" <?php if(isset($_GET['tipo']) && $_GET['tipo'] == 'Usato') echo 'selected'; ?>>Usato</option>
+            <option value="Km Zero" <?php if(isset($_GET['tipo']) && $_GET['tipo'] == 'Km Zero') echo 'selected'; ?>>Km Zero</option>
         </select>
 
-        <select name="marca">
+        <select name="marca" class="form-select w-auto">
             <option value="">Tutte le marche</option>
-            <?php foreach ($marche as $m): ?>
-                <option value="<?= $m['Marca'] ?>" <?= isset($_GET['marca']) && $_GET['marca'] == $m['Marca'] ? 'selected' : '' ?>>
-                    <?= $m['Marca'] ?>
-                </option>
-            <?php endforeach; ?>
+            <?php
+            foreach($marche as $m) {
+                $sel = (isset($_GET['marca']) && $_GET['marca'] == $m['Marca']) ? 'selected' : '';
+                echo "<option value='" . $m['Marca'] . "' " . $sel . ">" . $m['Marca'] . "</option>";
+            }
+            ?>
         </select>
 
-        <button type="submit">Cerca</button>
+        <button type="submit" class="btn btn-success">Cerca</button>
     </form>
 
-    <div class="auto-grid">
-        <?php if (count($auto) == 0): ?>
-            <p>Nessuna auto trovata.</p>
-        <?php else: ?>
-            <?php foreach ($auto as $a): ?>
-                <div class="car-card">
-                    <a href="dettaglio.php?id=<?= $a['ID'] ?>">
-                        <?php if ($a['Immagine']): ?>
-                            <img src="/ProgettoFinale_Ilmondodellauto/<?= $a['Immagine'] ?>" alt="<?= $a['Marca'] ?> <?= $a['Modello'] ?>">
-                        <?php else: ?>
-                            <div class="no-foto">Nessuna foto</div>
-                        <?php endif; ?>
-                    </a>
-                    <div class="car-card-body">
-                        <span class="badge-tipo"><?= $a['TipoVeicolo'] ?></span>
-                        <p class="car-marca"><?= $a['Marca'] ?></p>
-                        <h3><?= $a['Modello'] ?></h3>
-                        <div class="car-specs">
-                            <span><?= $a['Cavalli'] ?> CV</span>
-                            <span><?= $a['Anno'] ?></span>
-                            <span><?= $a['Carrozzeria'] ?></span>
-                        </div>
-                        <div class="car-footer">
-                            <span class="car-prezzo">€ <?= number_format($a['Prezzo'], 0, ',', '.') ?></span>
-                            <a href="dettaglio.php?id=<?= $a['ID'] ?>">Vedi →</a>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <?php
+        if(count($auto) == 0) {
+            echo "<p>Nessuna auto trovata.</p>";
+        } else {
+            foreach($auto as $a) {
+                echo "
+                <div class='col'>
+                    <div class='card h-100'>
+                        <a href='dettaglio.php?id=" . $a['ID'] . "'>";
+                            if($a['Immagine']) {
+                                echo "<img src='/ProgettoFinale_Ilmondodellauto/" . $a['Immagine'] . "' class='card-img-top' alt='" . $a['Marca'] . "'>";
+                            } else {
+                                echo "<div class='no-foto'>Nessuna foto</div>";
+                            }
+                        echo "</a>
+                        <div class='card-body'>
+                            <p class='car-marca'>" . $a['Marca'] . "</p>
+                            <h5 class='card-title'>" . $a['Modello'] . "</h5>
+                            <div class='d-flex gap-2 mb-2'>
+                                <span class='badge-spec'>" . $a['Cavalli'] . " CV</span>
+                                <span class='badge-spec'>" . $a['Anno'] . "</span>
+                                <span class='badge-spec'>" . $a['Carrozzeria'] . "</span>
+                            </div>
+                            <div class='d-flex justify-content-between align-items-center mt-3'>
+                                <strong>€ " . number_format($a['Prezzo'], 0, ',', '.') . "</strong>
+                                <a href='dettaglio.php?id=" . $a['ID'] . "' class='btn btn-success btn-sm'>Vedi →</a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            <?php endforeach; ?>
-        <?php endif; ?>
+                </div>";
+            }
+        }
+        ?>
     </div>
 
 </div>
